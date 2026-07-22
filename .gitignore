@@ -11,3 +11,6 @@ env/
 .ipynb_checkpoints/
 dist/
 build/
+.ruff_cache/
+
+NOTES_for_me.md
