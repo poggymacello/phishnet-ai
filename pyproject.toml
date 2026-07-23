@@ -9,14 +9,14 @@ description = "Phishing email classification with a small attention-based neural
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
-    "torch",
-    "numpy",
-    "matplotlib",
-    "scikit-learn",
+    "torch==2.13.0",
+    "numpy==2.4.6",
+    "matplotlib==3.11.1",
+    "scikit-learn==1.9.0",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff"]
+dev = ["pytest", "ruff", "pip-audit", "bandit"]
 
 [project.scripts]
 phishnet = "phishnet.cli:main"

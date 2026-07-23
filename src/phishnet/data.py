@@ -140,7 +140,7 @@ def generate_dataset(n_samples: int = 600, phishing_ratio: float = 0.35, seed: i
     imbalance in the same ballpark as real phishing-detection datasets,
     where phishing is the minority class.
     """
-    rng = random.Random(seed)
+    rng = random.Random(seed)  # nosec B311: synthetic data generation, not security-sensitive
     n_phishing = int(round(n_samples * phishing_ratio))
     n_normal = n_samples - n_phishing
 

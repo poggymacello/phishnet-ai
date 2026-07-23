@@ -1,5 +1,9 @@
 # PhishNet AI
 
+[![ci](https://github.com/poggymacello/phishnet-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/poggymacello/phishnet-ai/actions/workflows/ci.yml)
+
+**Data: synthetic (see Limitations).** For a version of this portfolio built on a real, labeled dataset with a deployed inference service, see [shadowtrace](https://github.com/poggymacello/shadowtrace).
+
 Phishing email classification with a small attention-based neural network, benchmarked against a TF-IDF baseline.
 
 ## Problem
@@ -47,6 +51,10 @@ The baseline actually wins here, and that's an honest result worth sitting with 
 - Synthetic data with disjoint phishing/normal vocabulary makes this an easy separation problem; the baseline saturating at 1.0 F1 is a ceiling effect of the data, not evidence the linear model would generalize to real phishing text.
 - The attention-meaningfulness check is a simple average-attention comparison on a curated word list, not a rigorous attribution method (e.g., integrated gradients or attention rollout); it's a sanity check, not proof of what the model is or isn't using.
 - No real, labeled phishing corpus was used anywhere in this project.
+
+## Roadmap
+
+The next real step for this project, not yet done, is migrating from the synthetic generator to a public, labeled phishing corpus (e.g., a phishing/spam email or URL dataset with real-world vocabulary overlap between classes), which is exactly the condition needed to find out whether the attention model's added complexity earns its keep once phishing text stops using obviously distinct vocabulary from normal mail. `shadowtrace` went through that real-data migration already (see its README's leakage controls and synthetic-vs-real comparison) — the same pattern (real dataset, temporal/stratified split, leakage audit, honest reporting of whatever the numbers turn out to be) would apply here too. Deliberately not started yet: going deep on one project's real-data migration first, rather than shallow across several, was the point of this pass.
 
 ## References
 

@@ -22,3 +22,9 @@ jobs:
 
       - name: Test
         run: pytest -q
+
+      - name: Dependency vulnerability scan
+        run: pip-audit
+
+      - name: Static security analysis
+        run: bandit -q -r src

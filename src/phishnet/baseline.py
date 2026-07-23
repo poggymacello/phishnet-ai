@@ -9,9 +9,10 @@ from sklearn.pipeline import Pipeline
 
 
 def build_baseline(seed: int = 42) -> Pipeline:
+    token_pattern = r"(?u)\b\w+\b"  # nosec B105 - a tokenizer regex, not a credential
     return Pipeline(
         steps=[
-            ("tfidf", TfidfVectorizer(lowercase=True, token_pattern=r"(?u)\b\w+\b")),
+            ("tfidf", TfidfVectorizer(lowercase=True, token_pattern=token_pattern)),
             ("clf", LogisticRegression(max_iter=1000, random_state=seed)),
         ]
     )
