@@ -2,38 +2,51 @@
 
 ## Purpose
 
-Classifies email text as phishing or normal, comparing a small attention-based
-neural network against a TF-IDF + logistic regression baseline. A portfolio
-demonstration of the modeling pipeline (attention mechanism, baseline
-comparison, interpretability check), not a production phishing filter.
+Detects phishing URLs. Two generations exist in this repository:
+
+- **v2 (deployed, real data)**: character n-gram TF-IDF + logistic
+  regression, gradient boosting on structured URL features, and a small
+  attention-based neural network, all trained and evaluated on the real
+  PhiUSIIL dataset with a domain-grouped (eTLD+1) split. The TF-IDF model
+  is the one actually served at `/predict`.
+- **v1 (synthetic, kept for the fast pipeline demo)**: the same attention
+  model against a TF-IDF baseline on a synthetic email-text generator.
+  See README's "What changed from v1."
+
+Portfolio demonstration of a real-data modeling and deployment pipeline
+(leakage auditing, domain-grouped splitting, operating-point reporting,
+containerized serving), not a production phishing filter.
 
 ## Data
 
-Entirely synthetic (`src/phishnet/data.py`): 12 phishing templates and 12
-normal templates, randomized brand names/links/dates, deduplicated at
-generation time. No real phishing corpus. See README's Data and Limitations
-sections, and Roadmap for the planned real-data migration.
+PhiUSIIL Phishing URL Dataset, 235,795 real URLs (UCI, CC BY 4.0). See
+[`data/README.md`](data/README.md) for source, license, citation, and the
+URL-only vs. page-content feature split. Split by eTLD+1 (no domain's
+URLs cross train/val/test) rather than randomly, since random splitting
+would let the model "recognize" a domain it already saw during training.
 
-## Metrics (synthetic test split, seed 42)
+## Metrics (real PhiUSIIL test split, seed 42, `python -m phishnet real-train`)
 
-| Model | Precision | Recall | F1 | ROC-AUC |
-|---|---|---|---|---|
-| Attention NN | 0.962 | 0.781 | 0.862 | 0.990 |
-| TF-IDF + logistic regression | 1.000 | 1.000 | 1.000 | 1.000 |
+| Model | Precision | Recall | F1 | ROC-AUC | Recall@1%FPR | Recall@5%FPR |
+|---|---|---|---|---|---|---|
+| Attention NN (char, URL-only) | 0.901 | 0.545 | 0.679 | 0.819 | 0.396 | 0.526 |
+| TF-IDF char n-gram + LogReg (URL-only, **deployed**) | 1.000 | 0.992 | 0.996 | 0.998 | 0.996 | 0.997 |
+| Gradient Boosting (URL-only) | 0.999 | 0.995 | 0.997 | 0.999 | 0.996 | 0.997 |
+| Gradient Boosting (full features, upper bound) | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
-The baseline's perfect score is a ceiling effect of synthetic data with
-disjoint phishing/normal vocabulary, not evidence of a production-ready
-classifier — see README for the full discussion.
-
-## Limitations
-
-- Synthetic data only; not validated on real email.
-- Attention-interpretability check is a simple average-attention comparison,
-  not a rigorous attribution method, and it came back showing no meaningful
-  difference between trigger-word and non-trigger-word attention (see README).
+The near-perfect URL-only scores are not leakage in the circular sense
+(no single URL-only feature exceeds the 0.98 single-feature-AUC
+suspicious threshold), but they are inflated by a real dataset-compilation
+artifact: 100% of PhiUSIIL's legitimate URLs use HTTPS, which is not true
+of real-world traffic and is an eroding signal as phishing increasingly
+uses free automated certificates. See README's Leakage Controls and
+Limitations sections for the full investigation.
 
 ## Not recommended for
 
-Any real phishing-detection decision. This is a methodology demonstration,
-not a validated filter — see the Roadmap section in the README for what
-real-world validation would require.
+Any real phishing-blocking decision without further validation on
+traffic outside this specific dataset's collection pipeline. The
+`IsHTTPS`-driven separability documented above is dataset-specific and
+should not be assumed to transfer to production traffic where legitimate
+sites without HTTPS and phishing sites with free HTTPS certificates are
+both common. See `docs/threat_model.md` for the full evasion discussion.

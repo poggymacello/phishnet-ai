@@ -14,3 +14,8 @@ build/
 .ruff_cache/
 
 NOTES_for_me.md
+
+# Full raw PhiUSIIL dataset (~57MB) -- never committed. Fetch with
+# scripts/download_data.py. data/sample/phiusiil_sample.csv (a small,
+# stratified fixture) IS committed and is not covered by this rule.
+data/raw/

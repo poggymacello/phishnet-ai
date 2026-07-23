@@ -1,0 +1,91 @@
+{
+  "metrics": {
+    "Attention NN (char, URL-only)": {
+      "precision": 0.9006,
+      "recall": 0.5446,
+      "f1": 0.6787,
+      "roc_auc": 0.8188,
+      "recall_at_fpr_1pct": 0.3963,
+      "recall_at_fpr_5pct": 0.5261,
+      "bootstrap_pr_auc_ci": {
+        "point_estimate": 0.8573,
+        "ci_lower": 0.8536,
+        "ci_upper": 0.861
+      }
+    },
+    "TF-IDF char n-gram + LogReg (URL-only)": {
+      "precision": 1.0,
+      "recall": 0.992,
+      "f1": 0.996,
+      "roc_auc": 0.9984,
+      "recall_at_fpr_1pct": 0.996,
+      "recall_at_fpr_5pct": 0.9965,
+      "bootstrap_pr_auc_ci": {
+        "point_estimate": 0.999,
+        "ci_lower": 0.9988,
+        "ci_upper": 0.9993
+      }
+    },
+    "Gradient Boosting (URL-only)": {
+      "precision": 0.9985,
+      "recall": 0.9946,
+      "f1": 0.9965,
+      "roc_auc": 0.9985,
+      "recall_at_fpr_1pct": 0.9959,
+      "recall_at_fpr_5pct": 0.9967,
+      "bootstrap_pr_auc_ci": {
+        "point_estimate": 0.9991,
+        "ci_lower": 0.9988,
+        "ci_upper": 0.9993
+      }
+    },
+    "Gradient Boosting (full features, upper bound)": {
+      "precision": 0.9999,
+      "recall": 0.9996,
+      "f1": 0.9997,
+      "roc_auc": 1.0,
+      "recall_at_fpr_1pct": 1.0,
+      "recall_at_fpr_5pct": 1.0,
+      "bootstrap_pr_auc_ci": {
+        "point_estimate": 1.0,
+        "ci_lower": 1.0,
+        "ci_upper": 1.0
+      }
+    }
+  },
+  "polarity_flags": {
+    "Attention NN (char, URL-only)": null,
+    "TF-IDF char n-gram + LogReg (URL-only)": null,
+    "Gradient Boosting (URL-only)": null,
+    "Gradient Boosting (full features, upper bound)": null
+  },
+  "trigger_stats": {
+    "trigger_mean_attention": 0.0162,
+    "other_mean_attention": 0.0182,
+    "n_trigger_chars": 87,
+    "n_other_chars": 824
+  },
+  "base_rates": {
+    "train": 0.4101851215504477,
+    "val": 0.4193064017787531,
+    "test": 0.5052910696475053
+  },
+  "leakage_audit": {
+    "top_single_feature_aucs": {
+      "LineOfCode": 0.9902,
+      "NoOfExternalRef": 0.9878,
+      "NoOfImage": 0.9842,
+      "NoOfJS": 0.9735,
+      "NoOfSelfRef": 0.9726,
+      "NoOfCSS": 0.9594,
+      "HasSocialNet": 0.8944,
+      "HasCopyrightInfo": 0.8717
+    },
+    "suspicious_features": {
+      "LineOfCode": 0.9902,
+      "NoOfExternalRef": 0.9878,
+      "NoOfImage": 0.9842
+    }
+  },
+  "nn_fit_seconds": 51.57
+}

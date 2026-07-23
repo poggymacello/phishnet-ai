@@ -9,7 +9,9 @@ from pathlib import Path
 from phishnet import baseline as baseline_mod
 from phishnet import evaluate as eval_mod
 from phishnet import model as model_mod
+from phishnet.artifact import artifact_path_for_version, build_artifact, save_artifact
 from phishnet.data import Vocabulary, generate_dataset, train_val_test_split
+from phishnet.real_pipeline import run_full_pipeline
 
 
 def _run_pipeline(n_samples: int, epochs: int, seed: int) -> dict:
@@ -89,6 +91,37 @@ def cmd_eval(args: argparse.Namespace) -> None:
     print("attention trigger check:", result["trigger_stats"])
 
 
+def cmd_real_train(args: argparse.Namespace) -> None:
+    out_dir = Path(args.output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    result = run_full_pipeline(seed=args.seed)
+    test = result["test"]
+
+    report = {
+        "metrics": result["metrics"],
+        "polarity_flags": result["polarity_flags"],
+        "trigger_stats": result["trigger_stats"],
+        "base_rates": result["base_rates"],
+        "leakage_audit": result["leakage_audit"],
+        "nn_fit_seconds": round(result["nn_fit_seconds"], 2),
+    }
+    (out_dir / "metrics_real.json").write_text(json.dumps(report, indent=2))
+
+    roc_inputs = {name: (test.labels, scores) for name, scores in result["scores"].items()}
+    eval_mod.plot_roc_curves(roc_inputs, out_dir / "roc_curve_real.png")
+
+    print(json.dumps(report, indent=2))
+    print(f"\nartifacts written to {out_dir}/")
+
+    print("\ntraining and saving the deployed TF-IDF artifact...")
+    train_full = result["train_full"]
+    artifact = build_artifact(list(train_full.urls), list(train_full.labels), seed=args.seed)
+    path = artifact_path_for_version(Path(args.models_dir))
+    save_artifact(artifact, path)
+    print(f"model artifact written to {path}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="phishnet")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -106,6 +139,15 @@ def build_parser() -> argparse.ArgumentParser:
         "eval", parents=[common], help="re-run the deterministic pipeline and print metrics"
     )
     eval_p.set_defaults(func=cmd_eval)
+
+    real_train_p = sub.add_parser(
+        "real-train",
+        help="train + evaluate on the real PhiUSIIL data and save the deployment artifact",
+    )
+    real_train_p.add_argument("--seed", type=int, default=42)
+    real_train_p.add_argument("--output-dir", default="assets")
+    real_train_p.add_argument("--models-dir", default="models")
+    real_train_p.set_defaults(func=cmd_real_train)
 
     return parser
 

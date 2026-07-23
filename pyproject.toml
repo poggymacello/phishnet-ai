@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phishnet"
-version = "0.2.0"
-description = "Phishing email classification with a small attention-based neural network"
+version = "0.3.0"
+description = "Phishing URL detection: char-level attention NN, TF-IDF, and gradient boosting baselines, benchmarked on real PhiUSIIL data with a FastAPI deployment"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
@@ -13,10 +13,18 @@ dependencies = [
     "numpy==2.4.6",
     "matplotlib==3.11.1",
     "scikit-learn==1.9.0",
+    "pandas==3.0.5",
+    "tldextract==5.3.1",
+    "fastapi==0.139.2",
+    "uvicorn==0.51.0",
+    "pydantic==2.13.4",
+    "slowapi==0.1.10",
+    "prometheus-client==0.25.0",
+    "joblib==1.5.3",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "pip-audit", "bandit"]
+dev = ["pytest", "ruff", "httpx", "pip-audit", "bandit"]
 
 [project.scripts]
 phishnet = "phishnet.cli:main"
