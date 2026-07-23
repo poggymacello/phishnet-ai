@@ -14,6 +14,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Upgrade packaging tools
+        run: pip install --upgrade pip setuptools
+
       - name: Install package
         run: pip install -e ".[dev]"
 
